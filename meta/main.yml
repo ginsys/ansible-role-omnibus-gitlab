@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: Serge van Ginderachter
+  description: >
+    An ansible role to deploy Gitlab (https://www.gitlab.com/) by means of their
+    omnibus-gitlab package (https://gitlab.com/gitlab-org/omnibus-gitlab).
+  company: ginsys.eu
+  license: GPLv3
+  min_ansible_version: 1.6
+  platforms:
+  - name: EL
+    versions:
+    - 6
+  - name: Ubuntu
+    versions:
+    - precise
+  - name: Debian
+    versions:
+    - wheezy
+  categories:
+  - web
+
+dependencies: []
+

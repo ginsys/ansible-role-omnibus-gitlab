@@ -1,12 +1,38 @@
 ---
-- name:                 install gitlab package
+# CHECKS
+#
+- name:                 check role prerequisites
+  assert:
+    that:
+                        - ansible_distribution in gitlab_package_url_path.keys()
+                        - gitlab_version in gitlab_version_supported
+                        - ansible_lsb.codename in gitlab_release_supported
+
+# INSTALL OMNIBUS PACKAGE
+#
+- name:                 download package - deb
+  get_url:
+    url:                '{{ gitlab_package_url }}'
+    dest:               /opt/
+  when:                 ansible_pkg_mgr == 'apt'
+  register:             gitlab_downloaded_package
+
+- name:                 install gitlab package - deb
   action:
     module:                 apt
-    name:                   gitlab={{ gitlab_version }}
-    state:                  installed
-    update_cache:           yes
-    cache_valid_time:       3600
+    deb:                    '{{ gitlab_downloaded_package.dest }}'
+    state:                  present
+  register:             gitlab_downloaded_package
 
+- name:                 install gitlab package - rpm
+  action:
+    module:                 yum
+    name:                  '{{ gitlab_package_url }}'
+    state:                  present
+  when:                 ansible_pkg_mgr == 'yum'
+
+# SSL CERTIFICATES
+#
 - name:                 Create GitLab configuration folders.
   file:
     path:                   /etc/gitlab/ssl
@@ -26,6 +52,8 @@
                             creates={{ nginx_ssl_certificate }}
   when:                 gitlab_create_self_signed_cert
 
+# OMNIBUS GITLAB CONFIG
+#
 - name:                 Copy GitLab configuration file.
   template:
     src:                    gitlab.rb.j2

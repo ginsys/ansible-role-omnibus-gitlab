@@ -1,6 +1,8 @@
 ---
-# deb package version to install
-gitlab_version:         "6.8.2-omnibus-1"
+# package to install
+gitlab_package_url:     '{{ gitlab_package_url_base ~ gitlab_package_url_path[ansible_distribution] }}'
+gitlab_version:         "6.9.2-omnibus-1"
+
 # enable if you want ansible to reconfigure after each gitlab.rb change
 # when "false", will only run at initial bootstrap
 gitlab_autoreconfigure: "false"
