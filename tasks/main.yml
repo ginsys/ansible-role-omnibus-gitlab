@@ -1,0 +1,49 @@
+---
+- name:                 install gitlab package
+  action:
+    module:                 apt
+    name:                   gitlab={{ gitlab_version }}
+    state:                  installed
+    update_cache:           yes
+    cache_valid_time:       3600
+
+- name:                 Create GitLab configuration folders.
+  file:
+    path:                   /etc/gitlab/ssl
+    state:                  directory
+    owner:                  root
+    group:                  root
+    mode:                   700
+
+- name:                 Create self-signed certificate.
+  command: >
+                            openssl req -new -nodes -x509 -subj
+                            "{{ gitlab_self_signed_cert_subj }}"
+                            -days 3650
+                            -keyout {{ nginx_ssl_certificate_key }}
+                            -out {{ nginx_ssl_certificate }}
+                            -extensions v3_ca
+                            creates={{ nginx_ssl_certificate }}
+  when:                 gitlab_create_self_signed_cert
+
+- name:                 Copy GitLab configuration file.
+  template:
+    src:                    gitlab.rb.j2
+    dest:                   /etc/gitlab/gitlab.rb
+    owner:                  root
+    group:                  root
+    mode:                   600
+  notify:
+                        - bootstrap_gitlab
+                        - reconfigure_gitlab
+
+- meta:                 flush_handlers
+- name:                 bootstrap external provision database
+  debug: >
+                        Using an external database you now need to bootstrap/seed it:
+                        run as root: ' gitlab-rake gitlab:setup '
+                        This is a destructive command; do not run it on an existing database!
+  when: >
+                        gitlab_bootstrapped is defined and gitlab_bootstrapped|success
+                        and not omnibus.postgresql.enable
+

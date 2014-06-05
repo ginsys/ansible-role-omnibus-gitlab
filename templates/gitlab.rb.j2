@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+
+## General settings
+#
+{% if gitlab_external_url is defined %}
+external_url {{ gitlab_external_url }}
+{% endif %}
+{% if git_data_dir is defined %}
+git_data_dir {{ gitlab_git_data_dir }}
+{% endif %}
+
+## Omnnibus settings
+#
+{% for section, value in omnibus|dictsort %}
+{% if value is not mapping and value != "nil" %}
+{{ section|replace('gitlab_', 'gitlab-') }} = {{ value }}
+{% endif %}
+{% endfor %}
+
+{% for section, vars in omnibus|dictsort %}
+{% if vars is mapping %}
+# {{ section|replace('gitlab_', 'gitlab-') }} settings
+#
+{% for key, value in vars|dictsort %}
+{% if value != "nil" %}
+{{ section }}['{{ key }}'] = {{ value }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+

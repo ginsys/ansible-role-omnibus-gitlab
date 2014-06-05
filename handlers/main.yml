@@ -1,0 +1,14 @@
+---
+- name:                 bootstrap_gitlab
+  command: >
+                        gitlab-ctl reconfigure
+                        creates=/var/opt/gitlab/bootstrapped
+  register:             gitlab_bootstrapped
+
+- name:                 reconfigure_gitlab
+  command:              gitlab-ctl reconfigure
+  when:                 gitlab_autoreconfigure and
+                         (gitlab_bootstrapped is not defined or gitlab_bootstrapped|skipped)
+
+- name:                 restart_gitlab
+  command:              gitlab-ctl restart

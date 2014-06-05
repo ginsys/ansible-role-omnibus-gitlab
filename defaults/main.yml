@@ -1,0 +1,209 @@
+---
+# deb package version to install
+gitlab_version:         "6.8.2-omnibus-1"
+# enable if you want ansible to reconfigure after each gitlab.rb change
+# when "false", will only run at initial bootstrap
+gitlab_autoreconfigure: "false"
+
+# SSL Self-signed Certificate Configuration.
+gitlab_create_self_signed_cert:    "false"
+gitlab_self_signed_cert_subj:      "/C=BE/ST=Brabant/L=Brussels/O=IT/CN=gitlab"
+
+# NGINX/SSL Configuration.
+gitlab_ssl_certificate_path:    "/etc/gitlab/ssl"
+
+# smtp delivery
+gitlab_smtp_delivery_enabled:       "false"
+gitlab_smtp_host:                   "email.server.com"
+gitlab_smtp_port:                   "456"
+gitlab_smtp_domain:                 "gitlab.company.com" # HELO/EHLO
+gitlab_smtp_user_name:              ""
+gitlab_smtp_password:               ""
+gitlab_smtp_authentication:         "" #:login
+gitlab_smtp_enable_starttls_auto:   "false"
+
+# https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-cookbooks/gitlab/libraries/gitlab.rb#L118
+# This variable can overrule
+#  Gitlab['gitlab_shell']['git_data_directory'] ||= git_data_dir
+#  Gitlab['gitlab_rails']['gitlab_shell_repos_path'] ||= File.join(git_data_dir, "repositories")
+#  Gitlab['gitlab_rails']['satellites_path'] ||= File.join(git_data_dir, "gitlab-satellites")
+#gitlab_git_data_dir:           "/var/opt/gitlab/git-data"
+
+# set external url, also default port and http/https
+gitlab_external_url:    "http://gitlab.local/"
+
+## default user
+# login......... admin@local.host
+# password...... 5iveL!fe
+#
+
+## omnibus-gitlab defaults; source see:
+# https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-cookbooks/gitlab/attributes/default.rb
+omnibus:
+  bootstrap:
+    enable: "true"
+  user:
+    username: '"git"'
+    group: '"git"'
+    shell: '"/bin/sh"'
+    home: '"/var/opt/gitlab"'
+    git_user_name: '"GitLab"'
+    git_user_email: >
+                    "gitlab@#{node['fqdn']}"
+  gitlab_rails:
+    dir: '"/var/opt/gitlab/gitlab-rails"'
+    dir: '"/var/opt/gitlab/gitlab-rails"'
+    log_directory: '"/var/log/gitlab/gitlab-rails"'
+    environment: '"production"'
+    internal_api_url: '"http://localhost:8080"'
+    uploads_directory: '"/var/opt/gitlab/gitlab-rails/uploads"'
+    rate_limit_requests_per_period: 10
+    rate_limit_period: 60
+    gitlab_host: node['fqdn']
+    gitlab_port: 80
+    gitlab_https: "false"
+    gitlab_email_from: >
+                        "gitlab@#{node['fqdn']}"
+    gitlab_support_email: '"support@localhost"'
+    gitlab_default_projects_limit: 10
+    gitlab_default_can_create_group: "nil"
+    gitlab_username_changing_enabled: "nil"
+    gitlab_default_theme: "nil"
+    gitlab_signup_enabled: "nil"
+    gitlab_default_projects_features_issues: "true"
+    gitlab_default_projects_features_merge_requests: "true"
+    gitlab_default_projects_features_wiki: "true"
+    gitlab_default_projects_features_wall: "false"
+    gitlab_default_projects_features_snippets: "false"
+    gitlab_default_projects_features_visibility_level: '"private"'
+    issues_tracker_redmine: "false"
+    issues_tracker_redmine_title: '"Redmine"'
+    issues_tracker_redmine_project_url: '"http://redmine.sample/projects/:issues_tracker_id"'
+    issues_tracker_redmine_issues_url: '"http://redmine.sample/issues/:id"'
+    issues_tracker_redmine_new_issue_url: '"http://redmine.sample/projects/:issues_tracker_id/issues/new"'
+    issues_tracker_jira: "false"
+    issues_tracker_jira_title: '"Atlassian Jira"'
+    issues_tracker_jira_project_url: '"http://jira.sample/issues/?jql=project=:issues_tracker_id"'
+    issues_tracker_jira_issues_url: '"http://jira.sample/browse/:id"'
+    issues_tracker_jira_new_issue_url: '"http://jira.sample/secure/CreateIssue.jspa"'
+    gravatar_enabled: "true"
+    gravatar_plain_url: "nil"
+    gravatar_ssl_url: "nil"
+    ldap_enabled: "false"
+    ldap_host: "nil"
+    ldap_base: "nil"
+    ldap_port: "nil"
+    ldap_uid: "nil"
+    ldap_method: "nil"
+    ldap_bind_dn: "nil"
+    ldap_password: "nil"
+    ldap_allow_username_or_email_login: "nil"
+    ldap_user_filter: "nil"
+    ldap_group_base: "nil"
+    satellites_path: '"/var/opt/gitlab/git-data/gitlab-satellites"' #if not explicitly set, overriden by git_data_dir + 'gitlab-satellites'
+    backup_path: '"/var/opt/gitlab/backups"'
+    backup_keep_time: "nil"
+    gitlab_shell_path: '"/opt/gitlab/embedded/service/gitlab-shell/"'
+    gitlab_shell_repos_path: '"/var/opt/gitlab/git-data/repositories"'    #if not explicitly set, overriden by git_data_dir + 'repositories'
+    gitlab_shell_hooks_path: '"/opt/gitlab/embedded/service/gitlab-shell/hooks/"'
+    gitlab_shell_upload_pack: "true"
+    gitlab_shell_receive_pack: "true"
+    gitlab_shell_ssh_port: 22
+    git_bin_path: '"/opt/gitlab/embedded/bin/git"'
+    git_max_size: 5242880
+    git_timeout: 10
+    db_adapter: '"postgresql"'
+    db_encoding: '"unicode"'
+    db_database: '"gitlabhq_production"'
+    db_pool: 10
+    db_username: '"gitlab"'
+    db_password: '"password"'
+    db_host: '"localhost"'
+    db_port: 5432
+    db_socket: "nil"
+  unicorn:
+    enable: "true"
+    ha: "false"
+    log_directory: '"/var/log/gitlab/unicorn"'
+    worker_processes: 2
+    listen: '"127.0.0.1"'
+    port: 8080
+    socket: '"/var/opt/gitlab/gitlab_rails/tmp/sockets/gitlab.socket"'
+    tcp_nopush: "true"
+    backlog_socket: 64
+    worker_timeout: 30
+  sidekiq:
+    enable: "true"
+    ha: "false"
+    log_directory: '"/var/log/gitlab/sidekiq"'
+  gitlab_shell:
+      log_directory: '"/var/log/gitlab/gitlab-shell/"'
+      git_data_directory: '"/var/opt/gitlab/git-data"' # if not explicitly set, overriden by git_data_dir
+  postgresql:
+    enable: "true"
+    ha: "false"
+    dir: '"/var/opt/gitlab/postgresql"'
+    data_dir: '"/var/opt/gitlab/postgresql/data"'
+    log_directory: '"/var/log/gitlab/postgresql"'
+    svlogd_size: 1000000
+    svlogd_num: 10
+    username: '"gitlab-psql"'
+    shell: '"/bin/sh"'
+    home: '"/var/opt/gitlab/postgresql"'
+    user_path: '"/opt/gitlab/embedded/bin:/opt/gitlab/bin:$PATH"'
+    sql_user: '"gitlab"'
+    sql_password: '"snakepliskin"'
+    port: 5432
+    listen_address: '"localhost"'
+    max_connections: 200
+    md5_auth_cidr_addresses: "[ ]"
+    trust_auth_cidr_addresses: "[ '127.0.0.1/32', '::1/128' ]"
+    shmmax: >
+            "kernel['machine'] =~ /x86_64/ ? 17179869184 : 4294967295"
+    shmall: >
+            "kernel['machine'] =~ /x86_64/ ? 4194304 : 1048575"
+    #shared_buffers: 14336MB
+    work_mem: '"8MB"'
+    effective_cache_size: >
+                        "#{(node['memory']['total'].to_i / 2) / (1024)}MB"
+    checkpoint_segments: 10
+    checkpoint_timeout: '"5min"'
+    checkpoint_completion_target: 0.9
+    checkpoint_warning: '"30s"'
+  redis:
+    enable: "true"
+    ha: "false"
+    dir: '"/var/opt/gitlab/redis"'
+    log_directory: '"/var/log/gitlab/redis"'
+    svlogd_size: 1000000
+    svlogd_num: 10
+    username: '"gitlab-redis"'
+    shell: '"/bin/nologin"'
+    home: '"/var/opt/gitlab/redis"'
+    port: 6379
+  nginx:
+    enable: "true"
+    ha: "false"
+    dir: '"/var/opt/gitlab/nginx"'
+    log_directory: '"/var/log/gitlab/nginx"'
+    worker_processes: >
+                        node['cpu']['total'].to_i
+    worker_connections: 10240
+    sendfile: '"on"'
+    tcp_nopush: '"on"'
+    tcp_nodelay: '"on"'
+    gzip: '"on"'
+    gzip_http_version: '"1.0"'
+    gzip_comp_level: '"2"'
+    gzip_proxied: '"any"'
+    gzip_types: '[ "text/plain", "text/css", "application/x-javascript", "text/xml", "application/xml", "application/xml+rss", "text/javascript", "application/json" ]'
+    keepalive_timeout: 65
+    client_max_body_size: '"250m"'
+    cache_max_size: '"5000m"'
+    redirect_http_to_https: "false"
+    redirect_http_to_https_port: 80
+    ssl_certificate:         '"{{ gitlab_ssl_certificate_path }}/gitlab.crt"'
+    ssl_certificate_key:     '"{{ gitlab_ssl_certificate_path }}/gitlab.key"'
+    ssl_ciphers: '"ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4"'
+    ssl_prefer_server_ciphers: "'on'"
+    listen_address: '"*"'
