@@ -3,24 +3,23 @@
 #
 - name:                 check role prerequisites
   assert:
-    that:
-                        - ansible_distribution in gitlab_package_url_path.keys()
-                        - gitlab_version in gitlab_version_supported
-                        - ansible_lsb.codename in gitlab_release_supported
+    that:               '{{ gitlab_supported }}'
 
 # INSTALL OMNIBUS PACKAGE
 #
-- name:                 download package - deb
-  get_url:
-    url:                '{{ gitlab_package_url }}'
-    dest:               /opt/
-  when:                 ansible_pkg_mgr == 'apt'
-  register:             gitlab_downloaded_package
+#- name:                 download package - deb
+#  get_url:
+#    url:                '{{ gitlab_package_url }}'
+#    dest:               /opt/
+#    validate_certs:     no
+#  when:                 ansible_pkg_mgr == 'apt'
+#  register:             gitlab_downloaded_package
 
 - name:                 install gitlab package - deb
   action:
     module:                 apt
-    deb:                    '{{ gitlab_downloaded_package.dest }}'
+    #deb:                    '{{ gitlab_downloaded_package.dest }}'
+    name:                   gitlab={{ gitlab_version }}
     state:                  present
   register:             gitlab_downloaded_package
 

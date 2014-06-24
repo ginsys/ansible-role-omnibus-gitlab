@@ -1,7 +1,16 @@
 ---
-# package to install
-gitlab_package_url:     '{{ gitlab_package_url_base ~ gitlab_package_url_path[ansible_distribution] }}'
-gitlab_version:         "6.9.2-omnibus-1"
+gitlab_version:             '7.0.0-omnibus-1'
+gitlab_package_url_path:
+  7.0.0-omnibus-1:          "/ubuntu-14.04/gitlab_7.0.0-omnibus-1"
+                            #/centos-6.5/gitlab-7.0.0_omnibus-1
+                            #/debian-7.5/gitlab_7.0.0-omnibus-1
+                            #/ubuntu-12.04/gitlab_7.0.0-omnibus-1
+gitlab_package_url:         '{{ gitlab_package_url_host ~ gitlab_package_url_path[gitlab_version] ~ gitlab_package_ext[ansible_pkg_mgr] }}'
+
+gitlab_supported:
+  - ansible_distribution in ['Debian', 'Ubuntu', 'RedHat', 'CentOS']
+  - ansible_os_family == "Debian" and ansible_lsb.codename in ['precise', 'trusty', 'wheezy']
+      or ansible_os_family == "RedHat" and major_release == "6"
 
 # enable if you want ansible to reconfigure after each gitlab.rb change
 # when "false", will only run at initial bootstrap
@@ -12,7 +21,7 @@ gitlab_create_self_signed_cert:    "false"
 gitlab_self_signed_cert_subj:      "/C=BE/ST=Brabant/L=Brussels/O=IT/CN=gitlab"
 
 # NGINX/SSL Configuration.
-gitlab_ssl_certificate_path:    "/etc/gitlab/ssl"
+gitlab_ssl_certificate_path:        "/etc/gitlab/ssl"
 
 # smtp delivery
 gitlab_smtp_delivery_enabled:       "false"
@@ -139,8 +148,8 @@ omnibus:
     ha: "false"
     log_directory: '"/var/log/gitlab/sidekiq"'
   gitlab_shell:
-      log_directory: '"/var/log/gitlab/gitlab-shell/"'
-      git_data_directory: '"/var/opt/gitlab/git-data"' # if not explicitly set, overriden by git_data_dir
+    log_directory: '"/var/log/gitlab/gitlab-shell/"'
+    git_data_directory: '"/var/opt/gitlab/git-data"' # if not explicitly set, overriden by git_data_dir
   postgresql:
     enable: "true"
     ha: "false"

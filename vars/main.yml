@@ -1,17 +1,6 @@
 ---
 # https://www.gitlab.com/downloads/
-gitlab_package_url_base:    "https://downloads-packages.s3.amazonaws.com"
-gitlab_package_url_path:
-  Ubuntu:       "/ubuntu-12.04/gitlab_{{ gitlab_version }}_amd64.deb"
-  Debian:       "/debian-7.4/gitlab_{{ gitlab_version }}_amd64.deb"
-  RedHat:       "/centos-6.5/gitlab-{{ gitlab_version }}.el6.x86_64.rpm"
-gitlab_version_supported:
-                - "6.9.2-omnibus-1"
-gitlab_release_supported:
-                - 'precise'
-                - 'wheezy'
-                #? redhat?
-
-# see defaults:
-#gitlab_package_url:     '{{ gitlab_package_url_base ~ gitlab_package_url_path[ansible_distribution] }}'
-
+gitlab_package_url_host:    'https://downloads-packages.s3.amazonaws.com'
+gitlab_package_ext:
+  apt:                      "_amd64.deb"
+  yum:                      ".el6.x86_64.rpm"
